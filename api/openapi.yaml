@@ -1,0 +1,251 @@
+openapi: 3.0.3
+info:
+  title: testtask API
+  description: ...
+  version: 1.0.0
+
+paths:
+  /product:
+    post:
+      tags:
+        - product
+      summary: Создание нового продукта
+      description: Создание нового продукта
+      operationId: AddProduct
+      requestBody:
+        $ref: '#/components/requestBodies/productInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/product_200'
+        '400':
+          $ref: '#/components/responses/product_400'
+        '500':
+          $ref: '#/components/responses/product_500'
+      security:
+        - api_key: []
+    get:
+      tags:
+        - product
+      summary: Получение списка продуктов
+      description: Получение списка продуктов
+      operationId: ListProduct
+      parameters:
+        - $ref: '#/components/parameters/ProductListOffset'
+        - $ref: '#/components/parameters/ProductListLimit'
+      responses:
+        '200':
+          $ref: '#/components/responses/product_200'
+        '500':
+          $ref: '#/components/responses/product_500'
+      security:
+        - api_key: []
+  /product/{productID}:
+    get:
+      tags:
+        - product
+      summary: Получение информации о продукте
+      description: Получение информации о продукте
+      operationId: GetProductByID
+      parameters:
+        - $ref: '#/components/parameters/productID'
+      responses:
+        '200':
+          $ref: '#/components/responses/product_200'
+        '400':
+          $ref: '#/components/responses/product_400'
+        '404':
+          $ref: '#/components/responses/product_404'
+        '500':
+          $ref: '#/components/responses/product_500'
+      security:
+        - api_key: []
+    put:
+      tags:
+        - product
+      summary: Обновление данных о продукте
+      description: Обновление данных о продукте
+      operationId: UpdateProduct
+      parameters:
+        - $ref: '#/components/parameters/productID'
+      requestBody:
+        $ref: '#/components/requestBodies/productInput'
+      responses:
+        '200':
+          $ref: '#/components/responses/product_200'
+        '400':
+          $ref: '#/components/responses/product_400'
+        '404':
+          $ref: '#/components/responses/product_404'
+        '500':
+          $ref: '#/components/responses/product_500'
+      security:
+        - api_key: []
+    delete:
+      tags:
+        - product
+      summary: Удаление продукта
+      description: Удаление продукта
+      operationId: RemoveProduct
+      parameters:
+        - $ref: '#/components/parameters/productID'
+      responses:
+        '200':
+          $ref: '#/components/responses/product_200'
+        '400':
+          $ref: '#/components/responses/product_400'
+        '404':
+          $ref: '#/components/responses/product_404'
+        '500':
+          $ref: '#/components/responses/product_500'
+      security:
+        - api_key: []
+  /product/find:
+    get:
+      tags:
+        - product
+      summary: Поиск продукта по имени
+      description: Поиск продукта по имени
+      operationId: FindProductByName
+      parameters:
+        - $ref: '#/components/parameters/ProductName'
+        - $ref: '#/components/parameters/ProductListOffset'
+        - $ref: '#/components/parameters/ProductListLimit'
+      responses:
+        '200':
+          $ref: '#/components/responses/products_200'
+        '400':
+          $ref: '#/components/responses/products_400'
+        '500':
+          $ref: '#/components/responses/products_500'
+      security:
+        - api_key: []
+
+components:
+  schemas:
+    ProductID:
+      type: integer
+      format: int64
+      nullable: false
+      minimum: 0
+    ProductName:
+      type: string
+      nullable: false
+      maxLength: 255
+    ProductPrice:
+      type: integer
+      format: int64
+      nullable: false
+      minimum: 0
+    ProductPageSize:
+      type: integer
+      format: int32
+      nullable: false
+      minimum: 0
+      maximum: 65535
+    Product:
+      type: object
+      nullable: false
+      properties:
+        id:
+          $ref: '#/components/schemas/ProductID'
+        name:
+          $ref: '#/components/schemas/ProductName'
+        description:
+          type: string
+        price:
+          $ref: '#/components/schemas/ProductPrice'
+        created_at:
+          type: string
+          format: date-time
+          nullable: false
+    ProductInput:
+      type: object
+      properties:
+        name:
+          $ref: '#/components/schemas/ProductName'
+        description:
+          type: string
+          nullable: false
+        price:
+          $ref: '#/components/schemas/ProductPrice'
+  responses:
+    product_200:
+      description: Успешно
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Product'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Product'
+    product_400:
+      description: Неверные входные данные
+    product_404:
+      description: Продукт не найден
+    product_500:
+      description: Внутренняя ошибка сервера
+    products_200:
+      description: Успешно
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Product'
+        application/xml:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Product'
+    products_400:
+      description: Неверные входные данные
+    products_500:
+      description: Внутренняя ошибка сервера
+  parameters:
+    productID:
+      name: productID
+      in: path
+      description: ID продукта
+      required: true
+      schema:
+        $ref: '#/components/schemas/ProductID'
+    ProductName:
+      name: name
+      in: query
+      description: Имя продукта
+      required: true
+      allowEmptyValue: false
+      schema:
+        $ref: '#/components/schemas/ProductName'
+    ProductListOffset:
+      name: offset
+      in: query
+      description: ID первого продукта в окне пагинации
+      required: false
+      schema:
+        $ref: '#/components/schemas/ProductID'
+    ProductListLimit:
+      name: limit
+      in: query
+      description: Максимальное количество продуктов в выборке
+      required: false
+      schema:
+        $ref: '#/components/schemas/ProductPageSize'
+  requestBodies:
+    productInput:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProductInput'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/ProductInput'
+        application/x-www-form-urlencoded:
+          schema:
+            $ref: '#/components/schemas/ProductInput'
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header

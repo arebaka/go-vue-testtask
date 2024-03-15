@@ -1,0 +1,75 @@
+version: '3'
+
+services:
+  server:
+    build: .
+    image: are.moe/testtask-server
+    hostname: server
+    restart: on-failure
+    env_file: .env
+    depends_on:
+      - postgres
+    networks:
+      - backend
+      - frontend
+    expose:
+      - 3000
+    ports:
+      - 3001:3000
+    environment:
+      - PORT=3000
+      - PGHOST=postgres
+      - PGUSER=postgres
+      - PGPASSWORD=postgres
+      - PGDATABASE=postgres
+    logging:
+      driver: json-file
+      options:
+        max-size: 100M
+
+  client:
+    build: ./web
+    image: are.moe/testtask-client
+    restart: on-failure
+    env_file: .env
+    depends_on:
+      - server
+    networks:
+      - frontend
+    ports:
+      - ${PORT:-3000}:80
+    environment:
+      - API_URL=http://server:80/product/
+    logging:
+      driver: json-file
+      options:
+        max-size: 100M
+
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - backend
+    expose:
+      - 5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    logging:
+      driver: json-file
+      options:
+        max-size: 100M
+
+volumes:
+  data:
+    driver: local
+
+networks:
+  backend:
+    driver: bridge
+  frontend:
+    driver: bridge
