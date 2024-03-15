@@ -86,7 +86,7 @@ export default {
 				confirmButtonColor: '#3085d6',
 				cancelButtonColor: '#d33',
 				confirmButtonText: 'Да, удалить!',
-				cancelButtonText 'Отмена',
+				cancelButtonText: 'Отмена',
 			}).then(result => {
 				if (result.isConfirmed) {
 					axios.delete(`/${id}`)
