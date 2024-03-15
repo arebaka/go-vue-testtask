@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"log"
 	"net/http"
 	"strconv"
@@ -48,7 +49,6 @@ func NewProductHandler(service service.ProductService) *Product {
 func (h *Product) AddProduct(ctx *gin.Context) {
 	var input domain.ProductInput
 	if err := ctx.ShouldBind(&input); err != nil {
-		log.Println(err)
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
@@ -75,7 +75,7 @@ func (h *Product) GetProductByID(ctx *gin.Context) {
 	}
 
 	product, err := h.service.GetByID(domain.ProductID(id))
-	if err == domain.ErrProductNotFound {
+	if errors.Is(err, domain.ErrProductNotFound) {
 		ctx.AbortWithStatus(http.StatusNotFound)
 		return
 	}
@@ -106,7 +106,7 @@ func (h *Product) UpdateProduct(ctx *gin.Context) {
 	}
 
 	product, err := h.service.Update(domain.ProductID(id), input)
-	if err == domain.ErrProductNotFound {
+	if errors.Is(err, domain.ErrProductNotFound) {
 		ctx.AbortWithStatus(http.StatusNotFound)
 		return
 	}
@@ -127,7 +127,7 @@ func (h *Product) RemoveProduct(ctx *gin.Context) {
 	}
 
 	err = h.service.Delete(domain.ProductID(id))
-	if err == domain.ErrProductNotFound {
+	if errors.Is(err, domain.ErrProductNotFound) {
 		ctx.AbortWithStatus(http.StatusNotFound)
 		return
 	}

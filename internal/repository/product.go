@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
 
 	"are.moe/testtask/internal/domain"
 )
@@ -40,9 +41,9 @@ func rowsToProducts(rows *sql.Rows, length domain.ProductPageSize) ([]domain.Pro
 func (r *Product) Create(input domain.ProductInput) (domain.Product, error) {
 	var product domain.Product
 	row := r.db.QueryRow(
-		"INSERT INTO \"Products\" (\"Name\", \"Description\", \"Price\") "+
-			"VALUES ($1, $2, $3) "+
-			"RETURNING \"ID\", \"Name\", \"Description\", \"Price\", \"CreatedAt\"",
+		`INSERT INTO "Products" ("Name", "Description", "Price")
+			VALUES ($1, $2, $3)
+			RETURNING "ID", "Name", "Description", "Price", "CreatedAt"`,
 		input.Name, input.Description, input.Price,
 	)
 
@@ -56,13 +57,13 @@ func (r *Product) Create(input domain.ProductInput) (domain.Product, error) {
 func (r *Product) GetByID(id domain.ProductID) (domain.Product, error) {
 	var product domain.Product
 	row := r.db.QueryRow(
-		"SELECT \"ID\", \"Name\", \"Description\", \"Price\", \"CreatedAt\" "+
-			"FROM \"Products\" "+
-			"WHERE \"ID\" = $1",
+		`SELECT "ID", "Name", "Description", "Price", "CreatedAt"
+			FROM "Products"
+			WHERE "ID" = $1`,
 		id)
 
 	err := row.Scan(&product.ID, &product.Name, &product.Description, &product.Price, &product.CreatedAt)
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		return product, domain.ErrProductNotFound
 	}
 	if err != nil {
@@ -75,14 +76,14 @@ func (r *Product) GetByID(id domain.ProductID) (domain.Product, error) {
 func (r *Product) Update(id domain.ProductID, input domain.ProductInput) (domain.Product, error) {
 	var product domain.Product
 	row := r.db.QueryRow(
-		"UPDATE \"Products\" "+
-			"SET \"Name\"=$1, \"Description\"=$2, \"Price\"=$3 "+
-			"WHERE \"ID\" = $4 "+
-			"RETURNING \"ID\", \"Name\", \"Description\", \"Price\", \"CreatedAt\"",
+		`UPDATE "Products"
+			SET "Name"=$1, "Description"=$2, "Price"=$3
+			WHERE "ID" = $4
+			RETURNING "ID", "Name", "Description", "Price", "CreatedAt"`,
 		input.Name, input.Description, input.Price, id)
 
 	err := row.Scan(&product.ID, &product.Name, &product.Description, &product.Price, &product.CreatedAt)
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		return product, domain.ErrProductNotFound
 	}
 	if err != nil {
@@ -95,13 +96,13 @@ func (r *Product) Update(id domain.ProductID, input domain.ProductInput) (domain
 func (r *Product) Delete(id domain.ProductID) error {
 	var product domain.Product
 	row := r.db.QueryRow(
-		"DELETE FROM \"Products\" "+
-			"WHERE \"ID\" = $1 "+
-			"RETURNING  \"ID\", \"Name\", \"Description\", \"Price\", \"CreatedAt\"",
+		`DELETE FROM "Products"
+			WHERE "ID" = $1
+			RETURNING "ID", "Name", "Description", "Price", "CreatedAt"`,
 		id)
 
 	err := row.Scan(&product.ID, &product.Name, &product.Description, &product.Price, &product.CreatedAt)
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		return domain.ErrProductNotFound
 	}
 	return err
@@ -109,11 +110,12 @@ func (r *Product) Delete(id domain.ProductID) error {
 
 func (r *Product) List(offset domain.ProductID, limit domain.ProductPageSize) ([]domain.Product, error) {
 	rows, err := r.db.Query(
-		"SELECT \"Products\".\"ID\", \"Products\".\"Name\", \"Products\".\"Description\", \"Products\".\"Price\", \"Products\".\"CreatedAt\" "+
-			"FROM \"Products\" JOIN ("+
-			"SELECT \"ID\" FROM \"Products\" "+
-			"ORDER BY \"ID\" OFFSET $1 LIMIT $2"+
-			") AS ids ON ids.\"ID\" = \"Products\".\"ID\"",
+		`SELECT "Products"."ID", "Products"."Name", "Products"."Description", "Products"."Price", "Products"."CreatedAt"
+			FROM "Products" JOIN (
+				SELECT "ID" FROM "Products"
+				ORDER BY "ID"
+				OFFSET $1 LIMIT $2
+			) AS ids ON ids."ID" = "Products"."ID"`,
 		offset, limit,
 	)
 	if err != nil {
@@ -125,12 +127,13 @@ func (r *Product) List(offset domain.ProductID, limit domain.ProductPageSize) ([
 
 func (r *Product) FindByName(name string, offset domain.ProductID, limit domain.ProductPageSize) ([]domain.Product, error) {
 	rows, err := r.db.Query(
-		"SELECT \"Products\".\"ID\", \"Products\".\"Name\", \"Products\".\"Description\", \"Products\".\"Price\", \"Products\".\"CreatedAt\" "+
-			"FROM \"Products\" JOIN ("+
-			"SELECT \"ID\" FROM \"Products\" "+
-			"WHERE \"Name\" = $1 "+
-			"ORDER BY \"ID\" OFFSET $2 LIMIT $3"+
-			") AS ids ON ids.\"ID\" = \"Products\".\"ID\"",
+		`SELECT "Products"."ID", "Products"."Name", "Products"."Description", "Products"."Price", "Products"."CreatedAt"
+			FROM "Products" JOIN (
+			SELECT "ID" FROM "Products"
+				WHERE "Name" = $1
+				ORDER BY "ID"
+				OFFSET $2 LIMIT $3
+			) AS ids ON ids."ID" = "Products"."ID"`,
 		name, offset, limit,
 	)
 	if err != nil {
