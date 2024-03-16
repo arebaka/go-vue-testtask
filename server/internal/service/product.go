@@ -10,8 +10,8 @@ type ProductService interface {
 	GetByID(id domain.ProductID) (domain.Product, error)
 	Update(id domain.ProductID, input domain.ProductInput) (domain.Product, error)
 	Delete(id domain.ProductID) error
-	List(offset domain.ProductID, limit domain.ProductPageSize) ([]domain.Product, error)
-	FindByName(name string, offset domain.ProductID, limit domain.ProductPageSize) ([]domain.Product, error)
+	List(offset domain.ProductID, limit domain.ProductPageSize) ([]domain.Product, domain.ProductID, error)
+	FindByName(name string, offset domain.ProductID, limit domain.ProductPageSize) ([]domain.Product, domain.ProductID, error)
 }
 
 type Products struct {
@@ -38,10 +38,10 @@ func (s *Products) Delete(id domain.ProductID) error {
 	return s.repo.Delete(id)
 }
 
-func (s *Products) List(offset domain.ProductID, limit domain.ProductPageSize) ([]domain.Product, error) {
+func (s *Products) List(offset domain.ProductID, limit domain.ProductPageSize) ([]domain.Product, domain.ProductID, error) {
 	return s.repo.List(offset, limit)
 }
 
-func (s *Products) FindByName(name string, offset domain.ProductID, limit domain.ProductPageSize) ([]domain.Product, error) {
+func (s *Products) FindByName(name string, offset domain.ProductID, limit domain.ProductPageSize) ([]domain.Product, domain.ProductID, error) {
 	return s.repo.FindByName(name, offset, limit)
 }

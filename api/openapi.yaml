@@ -34,9 +34,9 @@ paths:
         - $ref: '#/components/parameters/ProductListLimit'
       responses:
         '200':
-          $ref: '#/components/responses/product_200'
+          $ref: '#/components/responses/products_200'
         '500':
-          $ref: '#/components/responses/product_500'
+          $ref: '#/components/responses/products_500'
       security:
         - api_key: []
   /product/{productID}:
@@ -161,6 +161,7 @@ components:
           nullable: false
     ProductInput:
       type: object
+      nullable: false
       properties:
         name:
           $ref: '#/components/schemas/ProductName'
@@ -169,6 +170,21 @@ components:
           nullable: false
         price:
           $ref: '#/components/schemas/ProductPrice'
+    ProductList:
+      type: array
+      nullable: false
+      items:
+        $ref: '#/components/schemas/Product'
+    ProductListResponse:
+      type: object
+      nullable: false
+      xml:
+        name: Response
+      properties:
+        products:
+          $ref: '#/components/schemas/ProductList'
+        n_total:
+          $ref: '#/components/schemas/ProductID'
   responses:
     product_200:
       description: Успешно
@@ -190,14 +206,10 @@ components:
       content:
         application/json:
           schema:
-            type: array
-            items:
-              $ref: '#/components/schemas/Product'
+            $ref: '#/components/schemas/ProductListResponse'
         application/xml:
           schema:
-            type: array
-            items:
-              $ref: '#/components/schemas/Product'
+            $ref: '#/components/schemas/ProductListResponse'
     products_400:
       description: Неверные входные данные
     products_500:

@@ -52,7 +52,7 @@ func (h *Product) AddProduct(ctx *gin.Context) {
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	if len(input.Name) > domain.MaxProductNameLength {
+	if len(input.Name) > domain.MaxProductNameLength || len(input.Name) < domain.MinProductNameLength {
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
@@ -100,7 +100,7 @@ func (h *Product) UpdateProduct(ctx *gin.Context) {
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	if len(input.Name) > domain.MaxProductNameLength {
+	if len(input.Name) > domain.MaxProductNameLength || len(input.Name) < domain.MinProductNameLength {
 		ctx.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
@@ -147,14 +147,14 @@ func (h *Product) ListProducts(ctx *gin.Context) {
 		return
 	}
 
-	res, err := h.service.List(offset, limit)
+	products, nTotal, err := h.service.List(offset, limit)
 	if err != nil {
 		log.Println(err)
 		ctx.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, res)
+	ctx.JSON(http.StatusOK, domain.ProductListResponse{Products: products, NTotal: nTotal})
 }
 
 func (h *Product) FindProductsByName(ctx *gin.Context) {
@@ -170,12 +170,12 @@ func (h *Product) FindProductsByName(ctx *gin.Context) {
 		return
 	}
 
-	res, err := h.service.FindByName(name, offset, limit)
+	products, nTotal, err := h.service.FindByName(name, offset, limit)
 	if err != nil {
 		log.Println(err)
 		ctx.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, res)
+	ctx.JSON(http.StatusOK, domain.ProductListResponse{Products: products, NTotal: nTotal})
 }

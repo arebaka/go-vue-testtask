@@ -24,7 +24,13 @@ type ProductInput struct {
 	Price       uint64 `json:"price" form:"price" xml:"price" binding:"required"`
 }
 
+type ProductListResponse struct {
+	Products []Product `json:"products" xml:"products"`
+	NTotal   ProductID `json:"n_total" xml:"n_total"`
+}
+
 var (
 	ErrProductNotFound   = errors.New("Product not found")
 	MaxProductNameLength = 255
+	MinProductNameLength = 1
 )

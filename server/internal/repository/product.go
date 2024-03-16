@@ -12,8 +12,8 @@ type ProductRepo interface {
 	GetByID(id domain.ProductID) (domain.Product, error)
 	Update(id domain.ProductID, input domain.ProductInput) (domain.Product, error)
 	Delete(id domain.ProductID) error
-	List(offset domain.ProductID, limit domain.ProductPageSize) ([]domain.Product, error)
-	FindByName(name string, offset domain.ProductID, limit domain.ProductPageSize) ([]domain.Product, error)
+	List(offset domain.ProductID, limit domain.ProductPageSize) ([]domain.Product, domain.ProductID, error)
+	FindByName(name string, offset domain.ProductID, limit domain.ProductPageSize) ([]domain.Product, domain.ProductID, error)
 }
 
 type Product struct {
@@ -108,7 +108,7 @@ func (r *Product) Delete(id domain.ProductID) error {
 	return err
 }
 
-func (r *Product) List(offset domain.ProductID, limit domain.ProductPageSize) ([]domain.Product, error) {
+func (r *Product) List(offset domain.ProductID, limit domain.ProductPageSize) ([]domain.Product, domain.ProductID, error) {
 	rows, err := r.db.Query(
 		`SELECT "Products"."ID", "Products"."Name", "Products"."Description", "Products"."Price", "Products"."CreatedAt"
 			FROM "Products" JOIN (
@@ -119,13 +119,21 @@ func (r *Product) List(offset domain.ProductID, limit domain.ProductPageSize) ([
 		offset, limit,
 	)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	return rowsToProducts(rows, limit)
+	var nTotal domain.ProductID
+	row := r.db.QueryRow(`SELECT COUNT(*) FROM "Products"`)
+	err = row.Scan(&nTotal)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	products, err := rowsToProducts(rows, limit)
+	return products, nTotal, err
 }
 
-func (r *Product) FindByName(name string, offset domain.ProductID, limit domain.ProductPageSize) ([]domain.Product, error) {
+func (r *Product) FindByName(name string, offset domain.ProductID, limit domain.ProductPageSize) ([]domain.Product, domain.ProductID, error) {
 	rows, err := r.db.Query(
 		`SELECT "Products"."ID", "Products"."Name", "Products"."Description", "Products"."Price", "Products"."CreatedAt"
 			FROM "Products" JOIN (
@@ -137,8 +145,16 @@ func (r *Product) FindByName(name string, offset domain.ProductID, limit domain.
 		name, offset, limit,
 	)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	return rowsToProducts(rows, limit)
+	var nTotal domain.ProductID
+	row := r.db.QueryRow(`SELECT COUNT(*) FROM "Products" WHERE "Name" = $1`, name)
+	err = row.Scan(&nTotal)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	products, err := rowsToProducts(rows, limit)
+	return products, nTotal, err
 }
