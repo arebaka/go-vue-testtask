@@ -1,5 +1,5 @@
 <template>
-	<layout-div>
+	<div class="container">
 		<h2 class="text-center mt-5 mb-3"> Продукт </h2>
 		<div class="card">
 			<div class="card-header">
@@ -9,32 +9,29 @@
 				</router-link>
 			</div>
 			<div class="card-body">
-				<b className="text-muted"> Название: </b>
+				<b class="text-muted"> Название: </b>
 				<p>{{product.name}}</p>
-				<b className="text-muted"> Описание: </b>
+				<b class="text-muted"> Описание: </b>
 				<p>{{product.description}}</p>
-				<b className="text-muted"> Цена: </b>
+				<b class="text-muted"> Цена: </b>
 				<p>{{product.price.toFixed(2)}}</p>
-				<b className="text-muted"> Создан: </b>
+				<b class="text-muted"> Создан: </b>
 				<p>{{product.created_at.toLocaleString()}}</p>
 			</div>
 		</div>
-	</layout-div>
+	</div>
  </template>
 
 <script>
 import axios from 'axios'
-import LayoutDiv from '../LayoutDiv.vue'
 import Swal from 'sweetalert2'
 
 export default {
 	name: 'ProductShow',
-	components: {
-		LayoutDiv,
-	},
 	data() {
 		return {
 			product: {
+				id: this.$route.params.id,
 				name: '',
 				description: '',
 				price: 0,
@@ -44,8 +41,7 @@ export default {
 		}
 	},
 	created() {
-		const id = this.$route.params.id
-		axios.get(`/${id}`)
+		axios.get(`/${this.product.id}`)
 		.then(response => {
 			this.product.name = response.data.name
 			this.product.description = response.data.description
@@ -56,7 +52,7 @@ export default {
 		.catch(error => {
 			Swal.fire({
 				icon: 'error',
-				title: 'Ошибка!',
+				title: 'Ошибка получения данных о продукте!',
 				showConfirmButton: false,
 				timer: 1500
 			})

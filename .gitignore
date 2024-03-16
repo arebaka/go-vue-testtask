@@ -1,19 +1,8 @@
-# Build
-bin/
-*.exe
-*.dll
-*.so
-*.dylib
-*.test
-
 # Data
 data
 
 # Workspace
 go.work
-
-# Dependencies
-vendor/
 
 # Dotenv
 .env

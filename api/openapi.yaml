@@ -131,6 +131,7 @@ components:
       type: string
       nullable: false
       maxLength: 255
+      minLength: 1
     ProductPrice:
       type: integer
       format: int64

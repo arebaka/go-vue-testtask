@@ -26,7 +26,7 @@ type Product struct {
 }
 
 func parseOffsetAndLimit(ctx *gin.Context) (domain.ProductID, domain.ProductPageSize, error) {
-	offset, err := strconv.ParseUint(ctx.DefaultQuery("offset", "0"), 10, 16)
+	offset, err := strconv.ParseUint(ctx.DefaultQuery("offset", "0"), 10, 64)
 	if err != nil {
 		return 0, 0, err
 	}

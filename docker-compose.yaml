@@ -2,7 +2,7 @@ version: '3'
 
 services:
   server:
-    build: .
+    build: ./server
     image: are.moe/testtask-server
     hostname: server
     restart: on-failure
@@ -15,7 +15,7 @@ services:
     expose:
       - 3000
     ports:
-      - 3001:3000
+      - ${SERVER_PORT:-3001}:3000
     environment:
       - PORT=3000
       - PGHOST=postgres
@@ -28,7 +28,7 @@ services:
         max-size: 100M
 
   client:
-    build: ./web
+    build: ./client
     image: are.moe/testtask-client
     restart: on-failure
     env_file: .env
@@ -37,9 +37,7 @@ services:
     networks:
       - frontend
     ports:
-      - ${PORT:-3000}:80
-    environment:
-      - API_URL=http://server:80/product/
+      - ${CLIENT_PORT:-3000}:80
     logging:
       driver: json-file
       options:

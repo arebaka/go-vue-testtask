@@ -1,5 +1,5 @@
 <template>
-	<layout-div>
+	<div class="container">
 		<h2 class="text-center mt-5 mb-3"> Редактировать продукт </h2>
 		<div class="card">
 			<div class="card-header">
@@ -17,7 +17,8 @@
 							type="text"
 							class="form-control"
 							id="name"
-							name="name"/>
+							name="name"
+						/>
 					</div>
 					<div class="form-group">
 						<label htmlFor="description"> Описание </label>
@@ -26,7 +27,8 @@
 							class="form-control"
 							id="description"
 							rows="3"
-							name="description"></textarea>
+							name="description"
+						></textarea>
 					</div>
 					<div class="form-group">
 						<label htmlFor="price"> Цена (в копейках) </label>
@@ -34,10 +36,11 @@
 							v-model="product.price"
 							class="form-control"
 							id="price"
-							name="price" />
+							name="price"
+						/>
 					</div>
 					<button
-						@click="handleSave()"
+						@click="save()"
 						:disabled="isSaving"
 						type="button"
 						class="btn btn-outline-primary mt-3"
@@ -46,22 +49,19 @@
 				</form>
 			</div>
 		</div>
-	</layout-div>
+	</div>
 </template>
 
 <script>
 import axios from 'axios'
-import LayoutDiv from '../LayoutDiv.vue'
 import Swal from 'sweetalert2'
 
 export default {
 	name: 'ProductEdit',
-	components: {
-		LayoutDiv,
-	},
 	data() {
 		return {
 			product: {
+				id: this.$route.params.id,
 				name: '',
 				description: '',
 				price: 0,
@@ -70,8 +70,7 @@ export default {
 		}
 	},
 	created() {
-		const id = this.$route.params.id
-		axios.get(`/${id}`)
+		axios.get(`/${this.product.id}`)
 		.then(response => {
 			this.product.name = response.data.name
 			this.product.description = response.data.description
@@ -81,7 +80,7 @@ export default {
 		.catch(error => {
 			Swal.fire({
 				icon: 'error',
-				title: 'An Error Occured!',
+				title: 'Ошибка получения данных о продукте!',
 				showConfirmButton: false,
 				timer: 1500
 			})
@@ -89,10 +88,9 @@ export default {
 		})
 	},
 	methods: {
-		handleSave() {
+		save() {
 			this.isSaving = true
-			const id = this.$route.params.id
-			axios.put(`/${id}`, this.product)
+			axios.put(`/${this.product.id}`, this.product)
 			.then(response => {
 				Swal.fire({
 					icon: 'success',
@@ -101,9 +99,6 @@ export default {
 					timer: 1500
 				})
 				this.isSaving = false
-				this.product.name = ''
-				this.product.description = ''
-				this.product.price = 0
 				return response
 			})
 			.catch(error => {

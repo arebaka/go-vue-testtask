@@ -1,5 +1,5 @@
 <template>
-	<layout-div>
+	<div class="container">
 		<h2 class="text-center mt-5 mb-3"> Новый продукт </h2>
 		<div class="card">
 			<div class="card-header">
@@ -17,7 +17,8 @@
 							type="text"
 							class="form-control"
 							id="name"
-							name="name"/>
+							name="name"
+						/>
 					</div>
 					<div class="form-group">
 						<label htmlFor="description"> Описание </label>
@@ -25,8 +26,9 @@
 							v-model="product.description"
 							class="form-control"
 							id="description"
+							name="description"
 							rows="3"
-							name="description"></textarea>
+						></textarea>
 					</div>
 					<div class="form-group">
 						<label htmlFor="price"> Цена (в копейках) </label>
@@ -34,10 +36,11 @@
 							v-model="product.price"
 							class="form-control"
 							id="price"
-							name="price" />
+							name="price"
+						/>
 					</div>
 					<button
-						@click="handleSave()"
+						@click="save()"
 						:disabled="isSaving"
 						type="button"
 						class="btn btn-outline-primary mt-3"
@@ -46,20 +49,15 @@
 				</form>
 			</div>
 		</div>
-	</layout-div>
+	</div>
 </template>
 
 <script>
 import axios from 'axios'
 import Swal from 'sweetalert2'
 
-import LayoutDiv from '../LayoutDiv.vue'
-
 export default {
 	name: 'ProductCreate',
-	components: {
-		LayoutDiv,
-	},
 	data() {
 		return {
 			product: {
@@ -71,7 +69,7 @@ export default {
 		}
 	},
 	methods: {
-		handleSave() {
+		save() {
 			this.isSaving = true
 			axios.post('/', this.product)
 			.then(response => {

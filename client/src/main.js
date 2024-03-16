@@ -11,8 +11,7 @@ import ProductCreate from './components/pages/ProductCreate'
 import ProductShow from './components/pages/ProductShow'
 import ProductEdit from './components/pages/ProductEdit'
 
-// axios.defaults.baseURL = process.env.API_URL
-axios.defaults.baseURL = 'http://localhost:3001/product'  // TODO: replace with env
+axios.defaults.baseURL = process.env.VUE_APP_API_URL
 
 const router = createRouter({
 	history: createWebHistory(),
