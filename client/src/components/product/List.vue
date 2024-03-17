@@ -1,12 +1,23 @@
 <template>
 	<div class="container">
 		<h2 class="text-center mt-5 mb-3"> Продукты </h2>
-		<div class="card">
-			<div class="card-header">
-				<router-link to="/add"
-					class="btn btn-outline-primary"
-				> Новый продукт
-				</router-link>
+		<div class="card overflow-hidden">
+			<div class="card-header row">
+				<div class="col-8">
+					<router-link to="/add"
+						class="btn btn-outline-primary"
+					> Новый продукт
+					</router-link>
+				</div>
+				<div class="col-4">
+					<input
+						v-model="search"
+						type="text"
+						class="form-control"
+						placeholder="Поиск по названию..."
+						@input="searchByName"
+					/>
+				</div>
 			</div>
 			<div class="card-body">
 				<table class="table table-bordered">
@@ -50,7 +61,9 @@ export default {
 	name: 'ProductList',
 	data() {
 		return {
-			products: []
+			products: [],
+			nTotal: 0,
+			search: '',
 		}
 	},
 	created() {
@@ -60,11 +73,12 @@ export default {
 		fetchProductList() {
 			axios.get('/')
 			.then(response => {
-				for (let product of response.data) {
+				for (let product of response.data.products) {
 					product.price /= 100
 					product.created_at = new Date(Date.parse(product.created_at))
 				}
-				this.products = response.data
+				this.products = response.data.products
+				this.nTotal = response.data.n_total
 				return response
 			})
 			.catch(error => {
@@ -111,6 +125,10 @@ export default {
 					})
 				}
 			})
+		},
+		searchByName() {
+			// TODO
+			return
 		}
 	},
 }

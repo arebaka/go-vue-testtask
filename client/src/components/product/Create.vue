@@ -1,6 +1,6 @@
 <template>
 	<div class="container">
-		<h2 class="text-center mt-5 mb-3"> Редактировать продукт </h2>
+		<h2 class="text-center mt-5 mb-3"> Новый продукт </h2>
 		<div class="card">
 			<div class="card-header">
 				<router-link to="/"
@@ -11,7 +11,7 @@
 			<div class="card-body">
 				<form>
 					<div class="form-group">
-						<label htmlFor="name"> Назавание </label>
+						<label htmlFor="name"> Название </label>
 						<input
 							v-model="product.name"
 							type="text"
@@ -26,8 +26,8 @@
 							v-model="product.description"
 							class="form-control"
 							id="description"
-							rows="3"
 							name="description"
+							rows="3"
 						></textarea>
 					</div>
 					<div class="form-group">
@@ -40,7 +40,7 @@
 						/>
 					</div>
 					<button
-						@click="save()"
+						@click="save"
 						:disabled="isSaving"
 						type="button"
 						class="btn btn-outline-primary mt-3"
@@ -57,11 +57,10 @@ import axios from 'axios'
 import Swal from 'sweetalert2'
 
 export default {
-	name: 'ProductEdit',
+	name: 'ProductCreate',
 	data() {
 		return {
 			product: {
-				id: this.$route.params.id,
 				name: '',
 				description: '',
 				price: 0,
@@ -69,36 +68,19 @@ export default {
 			isSaving: false,
 		}
 	},
-	created() {
-		axios.get(`/${this.product.id}`)
-		.then(response => {
-			this.product.name = response.data.name
-			this.product.description = response.data.description
-			this.product.price = response.data.price
-			return response
-		})
-		.catch(error => {
-			Swal.fire({
-				icon: 'error',
-				title: 'Ошибка получения данных о продукте!',
-				showConfirmButton: false,
-				timer: 1500
-			})
-			return error
-		})
-	},
 	methods: {
 		save() {
 			this.isSaving = true
-			axios.put(`/${this.product.id}`, this.product)
+			axios.post('/', this.product)
 			.then(response => {
 				Swal.fire({
 					icon: 'success',
-					title: 'Данные о продукте обновлены!',
+					title: 'Продукт сохранён!',
 					showConfirmButton: false,
 					timer: 1500
 				})
 				this.isSaving = false
+				this.$router.push({ name: 'ProductList' })
 				return response
 			})
 			.catch(error => {
