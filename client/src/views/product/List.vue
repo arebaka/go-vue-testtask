@@ -1,9 +1,9 @@
 <template>
-	<ProductList />
+  <ProductList />
 </template>
 
 <script>
-import ProductList from '@/components/product/List.vue'
+import ProductList from '@/components/ProductList.vue'
 
 export default {
 	components: {

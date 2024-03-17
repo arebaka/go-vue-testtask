@@ -1,9 +1,9 @@
 <template>
-	<ProductCreate />
+  <ProductCreate />
 </template>
 
 <script>
-import ProductCreate from '@/components/product/Create.vue'
+import ProductCreate from '@/components/ProductCreate.vue'
 
 export default {
 	components: {
