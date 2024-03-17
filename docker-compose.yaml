@@ -2,9 +2,10 @@ version: '3'
 
 services:
   server:
-    build: ./server
+    build:
+      context: ./server
+      dockerfile: Dockerfile
     image: are.moe/testtask-server
-    hostname: server
     restart: on-failure
     env_file: .env
     depends_on:
@@ -28,7 +29,12 @@ services:
         max-size: 100M
 
   client:
-    build: ./client
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      args:
+        - NODE_ENV=${MODE:-production}
+        - VUE_APP_API_URL=http://localhost:${SERVER_PORT:-3001}/product/
     image: are.moe/testtask-client
     restart: on-failure
     env_file: .env

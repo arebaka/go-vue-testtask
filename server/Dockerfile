@@ -9,7 +9,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /app/web ./cmd/web/
 FROM alpine:3.19
 WORKDIR /app
 
-ENV PORT=${PORT}
+ENV PORT=${PORT:-3000}
 
 COPY --from=builder /app/ /app/
 

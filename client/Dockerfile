@@ -2,10 +2,11 @@ FROM node:21-alpine AS builder
 LABEL maintainer="arelive <me@are.moe> (are.moe)"
 WORKDIR /build
 
-ENV VUE_APP_API_URL="http://localhost:${SERVER_PORT:-3001}/product/"
-COPY . .
-RUN npm install
+ARG NODE_ENV=production
+ARG VUE_APP_API_URL
 
+COPY . .
+RUN npm install --dev
 RUN npm run build
 
 FROM nginx:1.25-alpine

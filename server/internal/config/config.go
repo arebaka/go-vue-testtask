@@ -18,7 +18,7 @@ type DBInfo struct {
 
 type Config struct {
 	Port     uint16                 `env:"PORT" envDefault:"3000"`
-	PageSize domain.ProductPageSize `env:"PAGE_SIZE" envDefault:"20"`
+	PageSize domain.ProductPageSize `env:"PAGE_SIZE" envDefault:"10"`
 	DBInfo   DBInfo
 }
 
