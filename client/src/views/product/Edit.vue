@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import ProductEdit from '../../components/product/Edit.vue'
+import ProductEdit from '@/components/product/Edit.vue'
 
 export default {
 	components: {

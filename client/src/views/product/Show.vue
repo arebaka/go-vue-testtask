@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import ProductShow from '../../components/product/Show.vue'
+import ProductShow from '@/components/product/Show.vue'
 
 export default {
 	components: {

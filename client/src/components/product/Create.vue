@@ -3,9 +3,11 @@
 		<h2 class="text-center mt-5 mb-3"> Новый продукт </h2>
 		<div class="card">
 			<div class="card-header">
-				<router-link to="/"
+				<router-link
+					to="/"
 					class="btn btn-outline-info float-right"
-				> Все продукты
+				>
+					Все продукты
 				</router-link>
 			</div>
 			<div class="card-body">
@@ -53,8 +55,9 @@
 </template>
 
 <script>
-import axios from 'axios'
 import Swal from 'sweetalert2'
+
+import { addProduct } from '@/service/product'
 
 export default {
 	name: 'ProductCreate',
@@ -71,8 +74,8 @@ export default {
 	methods: {
 		save() {
 			this.isSaving = true
-			axios.post('/', this.product)
-			.then(response => {
+			addProduct(this.product)
+			.then(() => {
 				Swal.fire({
 					icon: 'success',
 					title: 'Продукт сохранён!',
@@ -81,7 +84,6 @@ export default {
 				})
 				this.isSaving = false
 				this.$router.push({ name: 'ProductList' })
-				return response
 			})
 			.catch(error => {
 				this.isSaving = false

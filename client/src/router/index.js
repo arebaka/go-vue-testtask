@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import ProductList from '../views/product/List'
-import ProductCreate from '../views/product/Create'
-import ProductShow from '../views/product/Show'
-import ProductEdit from '../views/product/Edit'
+import ProductList from '@/views/product/List'
+import ProductCreate from '@/views/product/Create'
+import ProductShow from '@/views/product/Show'
+import ProductEdit from '@/views/product/Edit'
 
 const routes = [
 	{

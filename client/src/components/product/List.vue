@@ -4,9 +4,11 @@
 		<div class="card overflow-hidden">
 			<div class="card-header row">
 				<div class="col-8">
-					<router-link to="/add"
+					<router-link
+						to="/add"
 						class="btn btn-outline-primary"
-					> Новый продукт
+					>
+						Новый продукт
 					</router-link>
 				</div>
 				<div class="col-4">
@@ -54,8 +56,9 @@
 </template>
 
 <script>
-import axios from 'axios'
 import Swal from 'sweetalert2'
+
+import { getProductList, deleteProduct } from '@/service/product'
 
 export default {
 	name: 'ProductList',
@@ -71,24 +74,22 @@ export default {
 	},
 	methods: {
 		fetchProductList() {
-			axios.get('/')
-			.then(response => {
-				for (let product of response.data.products) {
+			getProductList()
+			.then(data => {
+				for (let product of data.products) {
 					product.price /= 100
 					product.created_at = new Date(Date.parse(product.created_at))
 				}
-				this.products = response.data.products
-				this.nTotal = response.data.n_total
-				return response
+				this.products = data.products
+				this.nTotal = data.n_total
 			})
-			.catch(error => {
+			.catch(() => {
 				Swal.fire({
 					icon: 'error',
 					title: 'Ошибка получения списка продуктов!',
 					showConfirmButton: false,
 					timer: 1500
 				})
-				return error
 			})
 		},
 		deleteProduct(id) {
@@ -103,8 +104,8 @@ export default {
 				cancelButtonText: 'Отмена',
 			}).then(result => {
 				if (result.isConfirmed) {
-					axios.delete(`/${id}`)
-					.then(response => {
+					deleteProduct(id)
+					.then(() => {
 						Swal.fire({
 							icon: 'success',
 							title: 'Продукт удалён!',
@@ -112,7 +113,6 @@ export default {
 							timer: 1500
 						})
 						this.fetchProductList()
-						return response
 					})
 					.catch(error => {
 						Swal.fire({

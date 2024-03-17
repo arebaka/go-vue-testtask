@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import ProductCreate from '../../components/product/Create.vue'
+import ProductCreate from '@/components/product/Create.vue'
 
 export default {
 	components: {

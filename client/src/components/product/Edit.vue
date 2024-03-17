@@ -3,9 +3,11 @@
 		<h2 class="text-center mt-5 mb-3"> Редактировать продукт </h2>
 		<div class="card">
 			<div class="card-header">
-				<router-link to="/"
+				<router-link
+					to="/"
 					class="btn btn-outline-info float-right"
-				> Все продукты
+				>
+					Все продукты
 				</router-link>
 			</div>
 			<div class="card-body">
@@ -53,8 +55,9 @@
 </template>
 
 <script>
-import axios from 'axios'
 import Swal from 'sweetalert2'
+
+import { getProduct, updateProduct } from '@/service/product'
 
 export default {
 	name: 'ProductEdit',
@@ -70,12 +73,11 @@ export default {
 		}
 	},
 	created() {
-		axios.get(`/${this.product.id}`)
-		.then(response => {
-			this.product.name = response.data.name
-			this.product.description = response.data.description
-			this.product.price = response.data.price
-			return response
+		getProduct(this.product.id)
+		.then(data => {
+			this.product.name = data.name
+			this.product.description = data.description
+			this.product.price = data.price
 		})
 		.catch(error => {
 			Swal.fire({
@@ -90,7 +92,7 @@ export default {
 	methods: {
 		save() {
 			this.isSaving = true
-			axios.put(`/${this.product.id}`, this.product)
+			updateProduct(this.product.id, this.product)
 			.then(response => {
 				Swal.fire({
 					icon: 'success',
