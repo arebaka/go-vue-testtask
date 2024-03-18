@@ -34,3 +34,10 @@ export function getProductList() {
 		return response.data
 	})
 }
+
+export function searchProductsByName(name) {
+	return axios.get(`/product/find?name=${name}`)
+	.then(response => {
+		return response.data
+	})
+}

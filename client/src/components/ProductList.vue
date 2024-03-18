@@ -76,7 +76,7 @@
 <script>
 import Swal from 'sweetalert2'
 
-import { getProductList, deleteProduct } from '@/service/product'
+import { getProductList, deleteProduct, searchProductsByName } from '@/service/product'
 
 export default {
   name: 'ProductList',
@@ -145,7 +145,27 @@ export default {
       })
     },
     searchByName() {
-      // TODO
+      if (this.search == '') {
+		this.fetchProductList()
+		return
+      }
+      searchProductsByName(this.search)
+      .then(data => {
+        for (let product of data.products) {
+          product.price /= 100
+          product.created_at = new Date(Date.parse(product.created_at))
+        }
+        this.products = data.products
+        this.nTotal = data.n_total
+      })
+      .catch(() => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Ошибка получения списка продуктов!',
+          showConfirmButton: false,
+          timer: 1500
+        })
+      })
       return
     }
   },
